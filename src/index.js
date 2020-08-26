@@ -28,11 +28,11 @@ let projection = d3
   projection.translate([canvas.width / 2, canvas.height / 2])
   const initialScale = projection.scale()
 
-  ctx.strokeStyle = '#fff'
+  ctx.strokeStyle = '#111'
 
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = '#222'
+    ctx.fillStyle = '#111'
     const radius = projection.scale()
     ctx.ellipse(
       canvas.width / 2,
@@ -44,17 +44,39 @@ let projection = d3
       2 * Math.PI
     )
     ctx.fill()
-    ctx.fillStyle = '#999'
+    ctx.fillStyle = '#bbb'
     ctx.beginPath()
     pathGenerator(data)
     ctx.fill()
     ctx.stroke()
   }
 
+  let rendering = false
+  let lastRequest = 0
+  function startRender() {
+    if (rendering) return
+    rendering = true
+    lastRequest = performance.now()
+    const step = () => {
+      render()
+      requestAnimationFrame(() => {
+        if (performance.now() - lastRequest > 200) {
+          rendering = false
+          return
+        }
+        step()
+      })
+    }
+    step()
+  }
+
+  startRender()
+
   function onDrag({ movementX: x, movementY: y }) {
     const rotate = projection.rotate()
     const k = 90 / projection.scale()
     projection.rotate([rotate[0] + x * k, rotate[1] - y * k])
+    startRender()
   }
 
   canvas.addEventListener('mousedown', () => {
@@ -72,16 +94,11 @@ let projection = d3
     if (next < 0.5 * initialScale) {
       next = 0.5 * initialScale
       e.preventDefault()
-    } else if (next > 3 * initialScale) {
-      next = 3 * initialScale
+    } else if (next > 4 * initialScale) {
+      next = 4 * initialScale
       e.preventDefault()
     }
     projection.scale(next)
+    startRender()
   })
-
-  const nextRen = () => {
-    render()
-    requestAnimationFrame(nextRen)
-  }
-  nextRen()
 })()
