@@ -1,21 +1,10 @@
 import * as d3 from 'd3'
 
-let width = window.innerWidth
-let height = window.innerHeight
-
-let projection = d3
-  .geoOrthographic()
-  .scale(250)
-  .center([0, 0])
-  .rotate([0, -30])
-  .translate([width / 2, height / 2])
+let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
 
 ;(async () => {
   const canvas = document.querySelector('canvas')
   const ctx = canvas.getContext('2d')
-
-  canvas.width = canvas.offsetWidth * devicePixelRatio
-  canvas.height = canvas.offsetHeight * devicePixelRatio
 
   const pathGenerator = d3.geoPath(projection, ctx)
 
@@ -23,9 +12,7 @@ let projection = d3
     'https://raw.githubusercontent.com/michael-keith/mps_interests/master/view/js/charts/data/world_map.json'
   )
 
-  const size = Math.min(canvas.width, canvas.height) * 0.9
-  projection.scale(size / 2)
-  projection.translate([canvas.width / 2, canvas.height / 2])
+  resize()
   const initialScale = projection.scale()
 
   ctx.strokeStyle = '#111'
@@ -100,5 +87,16 @@ let projection = d3
     }
     projection.scale(next)
     startRender()
+  })
+
+  function resize() {
+    canvas.width = canvas.offsetWidth * devicePixelRatio
+    canvas.height = canvas.offsetHeight * devicePixelRatio
+    projection.translate([canvas.width / 2, canvas.height / 2])
+    projection.scale((Math.min(canvas.width, canvas.height) * 0.9) / 2)
+  }
+  window.addEventListener('resize', () => {
+    resize()
+    render()
   })
 })()
