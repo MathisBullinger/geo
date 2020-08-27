@@ -31,7 +31,7 @@ export default (data, projection) => {
     countries.forEach((d) => {
       ctx.beginPath()
       pathGenerator(d)
-      ctx.fillStyle = d.id === hovered ? '#d84315' : '#fff8'
+      ctx.fillStyle = d.id === hovered ? '#ff9800aa' : '#fff8'
       ctx.fill()
       ctx.stroke()
     })

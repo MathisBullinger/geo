@@ -14,6 +14,29 @@ import initInteract from './interaction'
     projection
   )
 
+  function handleDragEvent(event, payload) {
+    switch (event) {
+      case 'start':
+        dragMoment = false
+        break
+      case 'stop':
+        dragMoment = true
+        break
+      case 'dir':
+        lastDragDir = payload
+        break
+    }
+  }
+
+  const { onUpdate } = initInteract(
+    startStep,
+    handleDragEvent,
+    projection,
+    initialScale,
+    pathGenerator,
+    onHover
+  )
+
   function update() {
     if (!dragMoment || !lastDragDir) return false
 
@@ -29,6 +52,7 @@ import initInteract from './interaction'
     next[1] = Math.max(Math.min(next[1], 60), -60)
     projection.rotate(next)
     lastDragDir = nextDragDir
+    onUpdate()
     return true
   }
 
@@ -49,29 +73,5 @@ import initInteract from './interaction'
     }
     step()
   }
-
   startStep()
-
-  function handleDragEvent(event, payload) {
-    switch (event) {
-      case 'start':
-        dragMoment = false
-        break
-      case 'stop':
-        dragMoment = true
-        break
-      case 'dir':
-        lastDragDir = payload
-        break
-    }
-  }
-
-  initInteract(
-    startStep,
-    handleDragEvent,
-    projection,
-    initialScale,
-    pathGenerator,
-    onHover
-  )
 })()

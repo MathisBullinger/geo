@@ -24,9 +24,10 @@ export default (
   let isMouseDown = false
   let lastHover
 
-  function onMouseMove(e) {
-    if (isMouseDown) return void onDrag(e)
-    let { x, y } = e
+  let lastMouse = []
+  function hoverCheck([x, y] = lastMouse) {
+    if (x === undefined || y === undefined) return
+    lastMouse = [x, y]
     x *= devicePixelRatio
     y *= devicePixelRatio
     const hits = bounds().filter(
@@ -55,6 +56,12 @@ export default (
     onHover(id)
   }
 
+  function onMouseMove(e) {
+    if (isMouseDown) return void onDrag(e)
+    let { x, y } = e
+    hoverCheck([x, y])
+  }
+
   function onDrag({ movementX: x, movementY: y }) {
     dragEvent('start')
     const rotate = projection.rotate()
@@ -74,7 +81,8 @@ export default (
     isMouseDown = true
   })
   ;['mouseup', 'mouseleave'].forEach((event) => {
-    canvas.addEventListener(event, () => {
+    canvas.addEventListener(event, ({ x, y }) => {
+      lastMouse = [x, y]
       isMouseDown = false
       dragEvent('stop')
     })
@@ -108,4 +116,11 @@ export default (
   }
 
   canvas.addEventListener('mousewheel', onZoom)
+
+  return {
+    onUpdate() {
+      mod = true
+      hoverCheck()
+    },
+  }
 }
