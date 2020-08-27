@@ -15,8 +15,12 @@ let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
   resize()
   const initialScale = projection.scale()
 
-  ctx.strokeStyle = '#111'
+  let running = false
+  let lastRequest = 0
+  let dragMoment = false
+  let lastDragDir
 
+  ctx.strokeStyle = '#111'
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = '#111'
@@ -36,37 +40,54 @@ let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
     pathGenerator(data)
     ctx.fill()
     ctx.stroke()
+
+    return performance.now() - lastRequest < 200
   }
 
-  let rendering = false
-  let lastRequest = 0
-  function startRender() {
-    if (rendering) return
-    rendering = true
+  function update() {
+    if (!dragMoment || !lastDragDir) return false
+
+    const nextDragDir = lastDragDir.map((v) => v * 0.95)
+    const mag = Math.sqrt(nextDragDir.reduce((a, c) => a ** 2 + c, 0))
+    if (mag < 0.1) return false
+    const rotate = projection.rotate()
+    const k = 90 / projection.scale()
+    const next = [
+      rotate[0] + nextDragDir[0] * k,
+      rotate[1] - nextDragDir[1] * k,
+    ]
+    next[1] = Math.max(Math.min(next[1], 60), -60)
+    projection.rotate(next)
+    lastDragDir = nextDragDir
+    return true
+  }
+
+  function startStep() {
     lastRequest = performance.now()
+    if (running) return
+    running = true
+
     const step = () => {
-      render()
-      requestAnimationFrame(() => {
-        if (performance.now() - lastRequest > 200) {
-          rendering = false
-          return
-        }
-        step()
-      })
+      if ([update(), render()].some(Boolean)) requestAnimationFrame(step)
+      else {
+        running = false
+      }
     }
     step()
   }
 
-  startRender()
+  startStep()
 
   function onDrag({ movementX: x, movementY: y }) {
+    dragMoment = false
     const rotate = projection.rotate()
     const k = 90 / projection.scale()
     const next = [rotate[0] + x * k, rotate[1] - y * k]
-    next[1] = Math.max(Math.min(next[1], 90), -90)
+    next[1] = Math.max(Math.min(next[1], 60), -60)
     projection.rotate(next)
+    lastDragDir = [x, y]
     if (Math.abs(next[0] - rotate[0]) + Math.abs(next[1] - rotate[1]) > 0)
-      startRender()
+      startStep()
   }
 
   canvas.addEventListener('mousedown', () => {
@@ -75,6 +96,7 @@ let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
   ;['mouseup', 'mouseleave'].forEach((event) => {
     canvas.addEventListener(event, () => {
       window.removeEventListener('mousemove', onDrag)
+      dragMoment = true
     })
   })
 
@@ -89,7 +111,7 @@ let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
       e.preventDefault()
     }
     projection.scale(next)
-    startRender()
+    startStep()
   })
 
   function resize() {
