@@ -62,8 +62,11 @@ let projection = d3.geoOrthographic().scale(250).center([0, 0]).rotate([0, -30])
   function onDrag({ movementX: x, movementY: y }) {
     const rotate = projection.rotate()
     const k = 90 / projection.scale()
-    projection.rotate([rotate[0] + x * k, rotate[1] - y * k])
-    startRender()
+    const next = [rotate[0] + x * k, rotate[1] - y * k]
+    next[1] = Math.max(Math.min(next[1], 90), -90)
+    projection.rotate(next)
+    if (Math.abs(next[0] - rotate[0]) + Math.abs(next[1] - rotate[1]) > 0)
+      startRender()
   }
 
   canvas.addEventListener('mousedown', () => {
