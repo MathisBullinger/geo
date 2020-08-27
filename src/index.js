@@ -9,7 +9,10 @@ import initInteract from './interaction'
   let lastDragDir
 
   const { data, projection } = await initWorld()
-  const { render, initialScale } = initRender(data, projection)
+  const { render, initialScale, pathGenerator, onHover } = initRender(
+    data,
+    projection
+  )
 
   function update() {
     if (!dragMoment || !lastDragDir) return false
@@ -63,5 +66,12 @@ import initInteract from './interaction'
     }
   }
 
-  initInteract(startStep, handleDragEvent, projection, initialScale)
+  initInteract(
+    startStep,
+    handleDragEvent,
+    projection,
+    initialScale,
+    pathGenerator,
+    onHover
+  )
 })()

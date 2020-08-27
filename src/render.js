@@ -5,6 +5,9 @@ const ctx = canvas.getContext('2d')
 export default (data, projection) => {
   const pathGenerator = d3.geoPath(projection, ctx)
 
+  const countries = data.features
+  let hovered
+
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = '#111'
@@ -24,12 +27,14 @@ export default (data, projection) => {
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    ctx.beginPath()
-    pathGenerator(data)
-    ctx.fillStyle = '#fff8'
-    ctx.fill()
     ctx.strokeStyle = '#0005'
-    ctx.stroke()
+    countries.forEach((d) => {
+      ctx.beginPath()
+      pathGenerator(d)
+      ctx.fillStyle = d.id === hovered ? '#d84315' : '#fff8'
+      ctx.fill()
+      ctx.stroke()
+    })
   }
 
   function resize() {
@@ -46,5 +51,10 @@ export default (data, projection) => {
   resize()
   const initialScale = projection.scale()
 
-  return { render, resize, initialScale }
+  function onHover(id) {
+    hovered = id
+    render()
+  }
+
+  return { render, resize, initialScale, pathGenerator, onHover }
 }
