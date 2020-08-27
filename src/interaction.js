@@ -23,14 +23,19 @@ export default (requestUpdate, dragEvent, projection, initialScale) => {
     })
   })
 
+  const ZOOM = {
+    MAX: 5,
+    MIN: 1,
+  }
+
   function onZoom(e) {
     const scale = projection.scale()
     let next = scale - (e.deltaY / 750) * scale
-    if (next < 0.5 * initialScale) {
-      next = 0.5 * initialScale
+    if (next < ZOOM.MIN * initialScale) {
+      next = ZOOM.MIN * initialScale
       e.preventDefault()
-    } else if (next > 4 * initialScale) {
-      next = 4 * initialScale
+    } else if (next > ZOOM.MAX * initialScale) {
+      next = ZOOM.MAX * initialScale
       e.preventDefault()
     }
     projection.scale(next)

@@ -9,20 +9,26 @@ export default (data, projection) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = '#111'
     const radius = projection.scale()
-    ctx.ellipse(
+
+    const gradient = ctx.createRadialGradient(
+      canvas.width / 2 + radius / 3,
+      canvas.height / 2 - radius / 3,
+      radius / 10,
       canvas.width / 2,
       canvas.height / 2,
-      radius,
-      radius,
-      0,
-      0,
-      2 * Math.PI
+      radius
     )
-    ctx.fill()
-    ctx.fillStyle = '#bbb'
+    gradient.addColorStop(0, '#333b')
+    gradient.addColorStop(1, '#000b')
+    gradient.addColorStop(1, 'transparent')
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
     ctx.beginPath()
     pathGenerator(data)
+    ctx.fillStyle = '#fff8'
     ctx.fill()
+    ctx.strokeStyle = '#0005'
     ctx.stroke()
   }
 
@@ -38,6 +44,7 @@ export default (data, projection) => {
   })
 
   resize()
+  const initialScale = projection.scale()
 
-  return { render, resize }
+  return { render, resize, initialScale }
 }

@@ -7,7 +7,6 @@ export const projection = d3
   .rotate([0, -30])
 
 export let data
-export const initialScale = projection.scale()
 
 export async function init() {
   data = await d3.json(

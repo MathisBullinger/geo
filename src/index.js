@@ -8,8 +8,8 @@ import initInteract from './interaction'
   let dragMoment = false
   let lastDragDir
 
-  const { data, projection, initialScale } = await initWorld()
-  const { render } = initRender(data, projection)
+  const { data, projection } = await initWorld()
+  const { render, initialScale } = initRender(data, projection)
 
   function update() {
     if (!dragMoment || !lastDragDir) return false
