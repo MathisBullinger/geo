@@ -34,15 +34,23 @@ export default (
       ({ bounds: [p1, p2] }) =>
         p1[0] <= x && p1[1] <= y && p2[0] >= x && p2[1] >= y
     )
-    if (!hits.length) return
+    if (!hits.length) {
+      if (lastHover) onHover(null)
+      return
+    }
 
     const pos = projection.invert([x, y])
-    const hit = hits.find(({ d }) =>
+    const direct = hits[
+      hits.some(({ d }) => d.properties.microstate) ? 'filter' : 'find'
+    ](({ d }) =>
       (d.geometry.type === 'MultiPolygon'
         ? d.geometry.coordinates.flat()
         : d.geometry.coordinates
       ).some((coords) => ptInPoly(pos, coords))
     )
+    const hit = !Array.isArray(direct)
+      ? direct
+      : direct.find(({ d }) => d.properties.microstate) || direct[0]
     if (!hit) {
       if (lastHover) {
         lastHover = undefined
@@ -54,6 +62,7 @@ export default (
     if (id === lastHover) return
     lastHover = id
     onHover(id)
+    console.log(hit.d.properties.name)
   }
 
   function onMouseMove(e) {

@@ -18,7 +18,7 @@ export async function init() {
     ...microstates.map(({ name, iso, coords: [lat, long] }) => ({
       type: 'Feature',
       id: iso,
-      properties: { name },
+      properties: { name, microstate: true },
       geometry: d3.geoCircle().center([long, lat]).radius(0.35)(),
     })),
   ]
