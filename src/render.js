@@ -1,15 +1,11 @@
 import * as d3 from 'd3'
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-import microstates from '../data/microstates.json'
 
 export default (data, projection) => {
   const pathGenerator = d3.geoPath(projection, ctx)
-  const micro = microstates.map(({ coords: [lat, long] }) =>
-    d3.geoCircle().center([long, lat]).radius(0.4)()
-  )
 
-  const countries = data.features
+  let countries = data.features
   let hovered
 
   function render() {
@@ -36,18 +32,10 @@ export default (data, projection) => {
     countries.forEach((d) => {
       ctx.beginPath()
       pathGenerator(d)
-      ctx.fillStyle = d.id === hovered ? '#ff9800aa' : '#fff8'
+      ctx.fillStyle = d.id === hovered ? '#ff9800' : '#ddd'
       ctx.fill()
       ctx.stroke()
     })
-
-    ctx.strokeStyle = '#222'
-    ctx.lineWidth = 1
-    ctx.fillStyle = '#999'
-    ctx.beginPath()
-    micro.forEach(pathGenerator)
-    ctx.fill()
-    ctx.stroke()
   }
 
   function resize() {
