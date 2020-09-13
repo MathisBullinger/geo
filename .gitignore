@@ -1,3 +1,6 @@
-node_modules
-dist
-.cache
+/node_modules/
+/public/build/
+scripts/*
+!scripts/genLogo.js
+.DS_Store
+tmp

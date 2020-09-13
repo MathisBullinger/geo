@@ -1,8 +1,7 @@
 import * as d3 from 'd3'
-const canvas = document.querySelector('canvas')
-const ctx = canvas.getContext('2d')
 
-export default (data, projection) => {
+export default (canvas, data, projection) => {
+  const ctx = canvas.getContext('2d')
   const pathGenerator = d3.geoPath(projection, ctx)
 
   let countries = data.features
