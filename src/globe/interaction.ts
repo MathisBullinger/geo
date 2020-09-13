@@ -46,7 +46,7 @@ export default (
       (d.geometry.type === 'MultiPolygon'
         ? d.geometry.coordinates.flat()
         : d.geometry.coordinates
-      ).some((coords) => ptInPoly(pos, coords))
+      ).some(coords => ptInPoly(pos, coords))
     )
     const hit = !Array.isArray(direct)
       ? direct
@@ -89,8 +89,8 @@ export default (
   canvas.addEventListener('mousedown', () => {
     isMouseDown = true
   })
-  ;['mouseup', 'mouseleave'].forEach((event) => {
-    canvas.addEventListener(event, ({ x, y }) => {
+  ;['mouseup', 'mouseleave'].forEach(event => {
+    canvas.addEventListener(event, ({ x, y }: MouseEvent) => {
       lastMouse = [x, y]
       isMouseDown = false
       dragEvent('stop')
@@ -118,7 +118,7 @@ export default (
   }
 
   function genBounds() {
-    return countries.map((d) => ({
+    return countries.map(d => ({
       bounds: pathGenerator.bounds(d),
       d,
     }))

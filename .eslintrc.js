@@ -16,5 +16,11 @@ module.exports = {
       processor: 'svelte3/svelte3',
     },
   ],
-  rules: {},
+  rules: {
+    semi: ['error', 'never'],
+    '@typescript-eslint/no-unused-vars': 'error',
+    'no-unreachable': 'warn',
+    'require-await': 'warn',
+    'no-else-return': ['warn', { allowElseIf: false }],
+  },
 }

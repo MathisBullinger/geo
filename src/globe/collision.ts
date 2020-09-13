@@ -1,4 +1,4 @@
-export function ptInPoly([x, y], vs) {
+export function ptInPoly([x, y]: Point, vs: Point[]) {
   let inside = false
   for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
     const xi = vs[i][0]

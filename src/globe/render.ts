@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 
-export default (canvas, data, projection) => {
+export default (canvas: HTMLCanvasElement, data, projection) => {
   const ctx = canvas.getContext('2d')
   const pathGenerator = d3.geoPath(projection, ctx)
 
